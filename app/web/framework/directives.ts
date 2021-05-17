@@ -1,0 +1,4 @@
+/**
+ * vue directives
+ */
+export default {};
