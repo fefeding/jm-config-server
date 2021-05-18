@@ -14,3 +14,6 @@
 
 * [发布配置帮助](./docs/发布脚本配置.md)
 
+* 登录态
+ > 现写死在 `app/middleware/access.ts` 中，请自行处理
+
