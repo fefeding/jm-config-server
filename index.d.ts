@@ -1,8 +1,6 @@
 /// <reference path="./typings/index.d.ts" />
 /// <reference path="./app/web/index.d.ts" />
-import '@jv/jv-egg-framework';
-import '@jv/types';
-import { Response as JVResponse} from '@jv/jv-models';
+import 'jm-egg-framework';
 
 declare module 'egg' {
     interface Application {

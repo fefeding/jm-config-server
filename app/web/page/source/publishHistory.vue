@@ -28,9 +28,6 @@
         <el-table-column
             prop="creator"
             label="发布人">
-            <template slot-scope="scope">
-                <StaffUserName :staffId="scope.row.creator" domain=""></StaffUserName>
-              </template>
         </el-table-column>
         <el-table-column
             prop="createTime"

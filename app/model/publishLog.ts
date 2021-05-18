@@ -4,7 +4,8 @@
  */
 import { Entity, CreateDateColumn, UpdateDateColumn, PrimaryGeneratedColumn, Column, PrimaryColumn } from 'typeorm';
 
-import { Meta, BaseORM, PublishLogState } from '@jv/jv-models';
+import BaseORM from './baseORM';
+import { PublishLogState } from './interface/enumType';
 
 @Entity('t_publish_log')
 export default class PublishLog extends BaseORM {

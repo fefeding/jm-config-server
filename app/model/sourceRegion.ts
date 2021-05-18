@@ -1,8 +1,7 @@
 'use strict';
 import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
 
-import { BaseORM } from '@jv/jv-models';
-import Source from './source';
+import BaseORM from './baseORM';
 
 /**
  * 数据源域目录

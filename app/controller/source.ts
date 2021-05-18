@@ -1,5 +1,6 @@
 import { Context, Controller } from 'egg';
 import { decorators } from 'jm-egg-framework';
+import { SearchPublishLogReq, SearchPublishLogRsp } from '../model/interface/publishLog';
 import {
     GetAllSourceReq,
     GetAllSourceRsp,
@@ -21,9 +22,7 @@ import {
     DeleteSourceRsp,
     Source,
     SourceData,
-    SearchPublishLogReq,
-    SearchPublishLogRsp
-} from '@jv/jv-models';
+} from '../model/interface/sourceData';
 
 import SourceOrm from '../model/source';
 import SourceDataOrm from '../model/sourceData';

@@ -4,7 +4,7 @@
 
 import { Vue, Prop, Component, Watch } from 'vue-property-decorator';
 import {
-    SourceUploadImageReq, SourceUploadImageRsp } from '@jv/jv-models/config-system/sourceData';
+    SourceUploadImageReq, SourceUploadImageRsp } from '../../../model/interface/sourceData';
 
 @Component
 export default class ImageUpload extends Vue {
@@ -69,7 +69,7 @@ export default class ImageUpload extends Vue {
             spinner: 'el-icon-loading',
             background: 'rgba(0, 0, 0, 0.7)'
         });
-
+        //@ts-ignore
         const rsp = await this.$ajax.requestApi<SourceUploadImageReq, SourceUploadImageRsp>(req, {
             method: 'post',
             url: '/api/source/upload?fileType=' +this.fileType + `&contentType=${contentType}&filename=${filename}`,
@@ -78,6 +78,7 @@ export default class ImageUpload extends Vue {
         loading.close();
 
         if(rsp.ret == 0) {
+            // @ts-ignore
             this.__imageUrl = rsp.data.url;
             console.log(rsp);
 

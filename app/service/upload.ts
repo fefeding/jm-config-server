@@ -3,7 +3,7 @@ import * as moment from 'moment';
 import { Context } from 'egg';
 import { ProxyResponse } from '@tars/rpc';
 import UploadFileLogOrm from '../model/uploadFileLog';
-import { Source, PublishLog, PublishSourceRsp, PublishLogState, SearchPublishLogReq, SearchPublishLogRsp} from '@jv/jv-models';
+import { PublishLog, SearchPublishLogReq, SearchPublishLogRsp} from '../model/interface/publishLog';
 import { BaseTypeService } from './base';
 
 export default class UploadFileLogService extends BaseTypeService<UploadFileLogOrm> {

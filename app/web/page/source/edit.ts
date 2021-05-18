@@ -14,7 +14,7 @@ import * as packageFormat from 'prettier-package-json';
 import {
     GetSourceByIdReq, GetSourceByIdRsp,
     GetAllSourceReq, GetAllSourceRsp,
-    SaveSourceReq, SaveSourceRsp, Source, Meta, Field, FieldType, FieldDataChannel } from '@jv/jv-models/config-system/sourceData';
+    SaveSourceReq, SaveSourceRsp, Source, Meta, Field, FieldType, FieldDataChannel } from '../../../model/interface/sourceData';
 
 @Component({
     components: {
@@ -194,6 +194,7 @@ export default class SourceEditUI extends Vue {
         await this.loadAllSource();
 
         const data = await this.loadSource(id);
+        // @ts-ignore
         this.currentSource.fromJSON(data);// 绑定
         this.currentPublishScript = data.publishScript || this.defaultScript;
 
@@ -317,6 +318,7 @@ export default class SourceEditUI extends Vue {
         }
         if(field) {
             this.fieldDialogTitle = '修改字段';
+            //@ts-ignore
             this.currentField.fromJSON(field);
             this.currentFieldFlag = 1;
             if(field.data) {
@@ -329,6 +331,7 @@ export default class SourceEditUI extends Vue {
         }
         else {
             this.fieldDialogTitle = '新增字段';
+            //@ts-ignore
             this.currentField.fromJSON({
                 name: '',
                 nickName: '',
@@ -395,6 +398,7 @@ export default class SourceEditUI extends Vue {
             }
 
             // 新增拷贝字段
+            //@ts-ignore
             if(this.currentFieldFlag === 0) this.computedMeta.Fields.push(new Field().fromJSON(this.currentField));
             this.fieldDialogVisible = false;
             this.currentSource.meta.Fields = this.computedMeta.Fields;// 刷新

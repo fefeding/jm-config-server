@@ -76,7 +76,7 @@ export default (appInfo: EggAppConfig) => {
 
     // 配置上传
     config.multipart = {
-        fileSize: '10mb',
+        fileSize: '50mb',
         mode: 'stream',
         fileExtensions: ['.png', '.txt', '.jpg', '.gif', '.webp', '.pdf', '.m4a', '.wav'], // 扩展几种上传的文件格式
     };
@@ -88,6 +88,25 @@ export default (appInfo: EggAppConfig) => {
             92
         ]
     }
+
+    // COS密钥和策略
+    config.cos = {
+        SecretId: '',
+        SecretKey: '',
+        Bucket: '',
+        policy: {
+            // 授予所有资源完全读写权限
+            version: '2.0',
+            statement: [
+                {
+                    action: ['*'],
+                    effect: 'allow',
+                    resource: ['*']
+                }
+            ]
+        },
+        dir: ''
+    };
 
     return config;
 };

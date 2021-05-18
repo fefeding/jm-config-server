@@ -4,7 +4,7 @@
  */
 import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
 
-import { Meta, BaseORM, PublishLogState } from '@jv/jv-models';
+import BaseORM from './baseORM';
 
 @Entity('t_upload_file_log')
 export default class UploadFileLog extends BaseORM {

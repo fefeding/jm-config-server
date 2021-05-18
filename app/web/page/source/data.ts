@@ -12,15 +12,13 @@ import {
     DeleteSourceReq, DeleteSourceRsp,
     PublishSourceReq, PublishSourceRsp,
     Source, Meta, Field, FieldType, FieldSearchType,
-    FieldDataChannel, SourceData, DataStruct } from '@jv/jv-models/config-system/sourceData';
+    FieldDataChannel, SourceData, DataStruct } from '../../../model/interface/sourceData';
 
-import StaffUserName from '@jv/jv-account/app/web/component/controls/user';
 
 @Component({
     components: {
         ImageUploadControl,
         MapData,
-        StaffUserName,
         VJsoneditor
     }
 })
@@ -152,6 +150,7 @@ export default class SourceDataEditUI extends Vue {
                         });
                     }
                 }
+                // @ts-ignore
                 f.filters = filters;
             }
         }
@@ -502,6 +501,7 @@ export default class SourceDataEditUI extends Vue {
         if(row && await this.$confirm("当前发布单条记录，确认发布？", '单条发布') != 'confirm') return;
 
         const req = new PublishSourceReq();
+        // @ts-ignore
         req.id = this.source.id;
         req.dataId = row?row.id:0;
 

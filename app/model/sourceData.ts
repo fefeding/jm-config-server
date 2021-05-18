@@ -1,7 +1,8 @@
 'use strict';
 import { Entity, Index, UpdateDateColumn, PrimaryGeneratedColumn, Column, PrimaryColumn } from 'typeorm';
 
-import { DataStruct, BaseORM } from '@jv/jv-models';
+import BaseORM from './baseORM';
+import { DataStruct } from './interface/model';
 
 @Entity('t_source_data')
 export default class SourceData extends BaseORM {

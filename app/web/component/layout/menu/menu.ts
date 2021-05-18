@@ -1,7 +1,7 @@
 import { Vue, Component, Prop } from 'vue-property-decorator';
 
-import { GetSourceByRegionReq, GetSourceByRegionRsp, Source } from '@jv/jv-models/config-system/sourceData';
-import { QueryRegionTreeReq, QueryRegionTreeRsp, SourceRegionSaveReq, SourceRegionSaveRsp, SourceRegion } from '@jv/jv-models/config-system/sourceRegion';
+import { GetSourceByRegionReq, GetSourceByRegionRsp, Source } from '../../../../model/interface/sourceData';
+import { QueryRegionTreeReq, QueryRegionTreeRsp } from '../../../../model/interface/sourceRegion';
 
 import MenuTree from './menuTree.vue';
 
@@ -60,77 +60,6 @@ export default class Menu extends Vue {
     // 加载菜单
     async loadMenus() {
         const menus = await this.loadRegions();
-
-        menus.push({
-            name: '活动配置',
-            icon: 'el-icon-menu',
-            path:'/tools/act/',
-            children: [
-                {
-                    name: '折扣产品配置',
-                    icon: 'el-icon-coin',
-                    path:'/tools/act/product'
-                },
-                {
-                    name: '折扣用户管理',
-                    icon: 'el-icon-coin',
-                    path:'/tools/act/user'
-                },
-                {
-                    name: '折扣用户结果',
-                    icon: 'el-icon-coin',
-                    path:'/tools/act/discountLog'
-                },
-            ]
-        });
-
-        menus.push({
-            name: '工具',
-            icon: 'el-icon-menu',
-            path:'/tools/',
-            children: [
-                {
-                    name: '白名单包管理',
-                    icon: 'el-icon-coin',
-                    path:'/tools/whiteManager'
-                },
-                {
-                    name: '查询用户信息',
-                    icon: 'el-icon-coin',
-                    path:'/tools/userInfo',
-                    children: [
-                        
-                    ]
-                },
-                {
-                    name: '长链接转短链接',
-                    icon: 'el-icon-coin',
-                    path:'/tools/long2ShortUrl',
-                    children: [
-                        
-                    ]
-                },
-                {
-                    name: '公众号关注二维码',
-                    icon: 'el-icon-coin',
-                    path:'/tools/wxQRCode',
-                    children: [
-                        
-                    ]
-                },
-                {
-                    name: '公众号菜单管理',
-                    icon: 'el-icon-coin',
-                    path:'/tools/wxMenu'
-                },
-                {
-                    name: '中金开户白名单',
-                    icon: 'el-icon-coin',
-                    path:'/tools/zjWhite'
-                }
-            ]
-        });
-
         return menus;
     }
 

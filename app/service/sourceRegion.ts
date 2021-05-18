@@ -1,9 +1,8 @@
 import { Context, Service } from 'egg';
 import SourceRegionORM from '../model/sourceRegion';
-import { SourceRegion } from '@jv/jv-models/config-system/sourceRegion';
-import { EValid } from '@jv/jv-models/base/enumType';
+import { SourceRegion } from '../model/interface/sourceRegion';
+import { EValid } from '../model/interface/enumType';
 import { BaseTypeService } from './base';
-import { FindManyOptions } from 'typeorm';
 
 export default class SourceRegionService extends BaseTypeService<SourceRegionORM> {
     constructor(ctx: Context) {

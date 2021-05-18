@@ -2,8 +2,8 @@
 import { Vue, Component, Prop } from 'vue-property-decorator';
 import SourceEdit from './edit.vue';
 import SourceDataEdit from './data.vue';
-import { GetSourceByRegionReq, GetSourceByRegionRsp, Source } from '@jv/jv-models/config-system/sourceData';
-import { QueryRegionTreeReq, QueryRegionTreeRsp, SourceRegionSaveReq, SourceRegionSaveRsp, SourceRegion } from '@jv/jv-models/config-system/sourceRegion';
+import { GetSourceByRegionReq, GetSourceByRegionRsp, Source } from '../../../model/interface/sourceData';
+import { QueryRegionTreeReq, QueryRegionTreeRsp, SourceRegionSaveReq, SourceRegionSaveRsp, SourceRegion } from '../../../model/interface/sourceRegion';
 
 
 @Component({
@@ -169,6 +169,7 @@ export default class SourceUI extends Vue {
         // 新增数据源
         else if(command == 'source') {
             this.currentRegionId = data.id;
+            // @ts-ignore
             this.currentEditSource.fromJSON({
                 id: 0,
                 key: '',
@@ -221,6 +222,7 @@ export default class SourceUI extends Vue {
         }
         // 编辑数据源
         else if(data.source) {
+            // @ts-ignore
             this.currentEditSource.fromJSON(data.source);
             this.currentRegionId = data.source.regionId;
             this.sourceDialogTitle = '修改数据源';

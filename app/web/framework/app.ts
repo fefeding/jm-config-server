@@ -1,7 +1,7 @@
 import Vue from 'vue';
 import { sync } from 'vuex-router-sync';
 
-import { axios } from '@jv/egg-jv-common';
+import axios from '../../lib/axios';
 import mixin from './mixin';
 import directives from './directives';
 

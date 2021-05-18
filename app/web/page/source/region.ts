@@ -3,7 +3,7 @@ import { Route } from 'vue-router';
 
 import {
     QuerySourceRegionsReq,
-    QuerySourceRegionsRsp,
+    QuerySourceRegionRsp,
     SourceRegionSaveReq,
     SourceRegionSaveRsp,
     QueryRegionTreeReq,
@@ -11,7 +11,7 @@ import {
     DeleteSourceRegionReq,
     DeleteSourceRegionRsp,
     SourceRegion
- } from '@jv/jv-models/config-system/sourceRegion';
+ } from '../../../model/interface/sourceRegion';
 
 @Component({
     components: {
@@ -37,7 +37,7 @@ export default class RegionEditUI extends Vue {
         }
         else {
             this.currentSourceRegion = new SourceRegion();
-            this.currentSourceRegion.parentId = this.parentId;
+            this.currentSourceRegion.parentId = Number(this.parentId);
         }
     }
 
@@ -63,9 +63,10 @@ export default class RegionEditUI extends Vue {
     async loadRegionById(id): Promise<SourceRegion> {
         const req = new QuerySourceRegionsReq();
         req.id = id;
-        const rsp = await this.$ajax.requestApi<QuerySourceRegionsReq, QuerySourceRegionsRsp>(req, {
+        const rsp = await this.$ajax.requestApi<QuerySourceRegionsReq, QuerySourceRegionRsp>(req, {
             method: 'GET'
         });
+        // @ts-ignore
         return rsp.data && rsp.data.length?rsp.data[0]: rsp.data;
     }
 
@@ -107,6 +108,7 @@ export default class RegionEditUI extends Vue {
             }
         }
         else {
+            // @ts-ignore
             delete opt.children;
         }
         return opt;

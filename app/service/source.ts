@@ -1,9 +1,9 @@
 import * as vm from 'vm';
 //import * as uglifyjs from 'uglify-js';
 import { Context, Service } from 'egg';
-import { EValid } from '@jv/jv-models/base/enumType';
+import { EValid } from '../model/interface/enumType';
 import SourceOrm from '../model/source'; //'../../../../../common/egg-jv-config/model/sourceData';
-import { Source, PublishSourceRsp, Response } from '@jv/jv-models';
+import { Source, PublishSourceRsp } from '../model/interface/sourceData';
 import { BaseTypeService } from './base';
 import { Connection } from 'typeorm';
 

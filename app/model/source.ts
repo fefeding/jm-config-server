@@ -1,7 +1,9 @@
 'use strict';
 import { Entity, CreateDateColumn, UpdateDateColumn, PrimaryGeneratedColumn, Column, PrimaryColumn } from 'typeorm';
-
-import { Meta, BaseORM } from '@jv/jv-models';
+import BaseModel from './interface/model';
+import BaseORM from './baseORM';
+import { FieldDataChannel, FieldSearchType, FieldType } from './interface/enumType';
+import { Meta } from './interface/sourceData';
 
 @Entity('t_source')
 export default class Source extends BaseORM {
@@ -51,5 +53,6 @@ export default class Source extends BaseORM {
     })
     public meta: Meta;
 }
+
 
 export { Source };

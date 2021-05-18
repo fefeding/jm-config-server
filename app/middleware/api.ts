@@ -1,5 +1,4 @@
 import { Context } from 'egg';
-import '@jv/egg-jv-common';
 
 /**
  * api请求拦截中间件

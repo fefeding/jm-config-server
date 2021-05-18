@@ -4,7 +4,7 @@
  */
 import { Entity, CreateDateColumn, UpdateDateColumn, PrimaryGeneratedColumn, Column, PrimaryColumn } from 'typeorm';
 
-import { Meta, BaseORM } from '@jv/jv-models';
+import BaseORM from './baseORM';
 
 /**
  * 日志类型

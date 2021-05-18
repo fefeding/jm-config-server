@@ -3,7 +3,8 @@ import * as moment from 'moment';
 import { Context } from 'egg';
 import { ProxyResponse } from '@tars/rpc';
 import PublishLogOrm from '../model/publishLog';
-import { Source, PublishLog, PublishSourceRsp, PublishLogState, SearchPublishLogReq, SearchPublishLogRsp} from '@jv/jv-models';
+import { Source, PublishSourceRsp } from '../model/interface/sourceData';
+import { PublishLog, PublishLogState, SearchPublishLogReq, SearchPublishLogRsp} from '../model/interface/publishLog';
 import { BaseTypeService } from './base';
 import { ary } from 'lodash';
 

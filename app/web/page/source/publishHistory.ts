@@ -1,13 +1,11 @@
 'use strict';
 import { Vue, Component, Watch } from 'vue-property-decorator';
 import * as moment from 'moment';
-import { SearchPublishLogReq, SearchPublishLogRsp, PublishLog, PublishLogState } from '@jv/jv-models/config-system/publishLog';
-
-import StaffUserName from '@jv/jv-account/app/web/component/controls/user';
+import { SearchPublishLogReq, SearchPublishLogRsp, PublishLog, PublishLogState } from '../../../model/interface/publishLog';
 
 @Component({
     components: {
-        StaffUserName
+        
     }
 })
 export default class PublishHistoryUI extends Vue {
@@ -26,7 +24,7 @@ export default class PublishHistoryUI extends Vue {
     // 查询
     @Watch('$route')
     async search(): Promise<void> {
-        const sourceId = this.$route.params.id || 0;
+        const sourceId = Number(this.$route.params.id || 0);
 
         const req = new SearchPublishLogReq();
         req.page = this.currentPage;
@@ -47,7 +45,7 @@ export default class PublishHistoryUI extends Vue {
 
             // 刷新
             this.logs = rsp.data;
-            this.totalCount = rsp.total;
+            this.totalCount = rsp.total as number;
         }
         else {
             this.$message.error('查询失败：' + rsp.msg);

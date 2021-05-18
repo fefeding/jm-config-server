@@ -9,7 +9,7 @@ import {
     SourceRegionSaveRsp,
     DeleteSourceRegionReq,
     DeleteSourceRegionRsp
-} from '@jv/jv-models/config-system/sourceRegion';
+} from '../model/interface/sourceRegion';
 
 export default class SourceController extends Controller {
     /**

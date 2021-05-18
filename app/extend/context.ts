@@ -1,5 +1,4 @@
 'use strict';
-import '@jv/egg-jv-common';
 import { Context } from 'egg';
 
 
