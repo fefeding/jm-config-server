@@ -65,7 +65,7 @@
     "config/**/*.ts",
     "mock/**/*.ts",
     "test/**/*.ts"
-  ],
+, "app/lib/tarsconfig.js"  ],
   "exclude": [
     "public",
     "app/web",
