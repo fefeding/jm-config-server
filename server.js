@@ -1,7 +1,7 @@
 // 给TAF调用的入口文件
 
 const egg = require('egg');
-const tarsConfig = require('@jv/egg-jv-common/lib/tarsConfig.js');
+const tarsConfig = require('./tarsConfig.js');
 
 const options = {
     env: 'prod',
@@ -17,7 +17,7 @@ async function start(options) {
     try {
 
         // 加载mysql配置
-        app.config.mysql = await tarsConfig.loadAndWatchConfig('Mysql.conf', {
+        /*app.config.mysql = await tarsConfig.loadAndWatchConfig('Mysql.conf', {
             format: 'JSON',
             // 被动更新配置
             configPushed: (conf) => {
@@ -43,11 +43,11 @@ async function start(options) {
             configPushed: (conf) => {
                 console.log(conf);
                 // 合并tars配置
-                app.config.jvCommon = Object.assign(app.config.jvCommon, conf);
+                app.config.common = Object.assign(app.config.common, conf);
             }
         });
         // 合并tars配置
-        app.config.jvCommon = Object.assign(app.config.jvCommon, commonConf);
+        app.config.common = Object.assign(app.config.common, commonConf);
 
         // 加载tars主控配置
         app.config.tars.client = await tarsConfig.loadAndWatchConfig('TarsClient.conf', {
@@ -138,7 +138,7 @@ async function start(options) {
                 // 合并tars配置
                 app.config.managers = conf;
             }
-        });
+        });*/
     }
     catch(e) {
         console.log(e);

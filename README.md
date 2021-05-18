@@ -4,7 +4,7 @@
 
 > git clone https://github.com/jiamao/jm-config-server.git
 > cd jm-config-server
-> npm i -g egg-bin && npm i
+> npm i -g egg-bin egg-scripts && npm i
 
 > 修改 `config/config.local.ts`中的数据配置库
 
