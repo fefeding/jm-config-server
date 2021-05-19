@@ -63,7 +63,7 @@ export default class Cos extends Service {
         // - durationSeconds	Number	要申请的临时密钥最长有效时间，单位秒，默认 1800，最大可设置 7200	否
         // - proxy	String	代理地址，如："http://proxy.example.com:8080"	否
         // - host	String	可以通过改参数指定请求的域名
-
+        // @ts-ignore
         return promisify(STS.getCredential)(Object.assign({}, this.configCos, opt));
     }
 
@@ -272,6 +272,7 @@ export default class Cos extends Service {
                     msg: 'miss dir and filename'
                 };
             }
+            // @ts-ignore
             const rsp = await promisify(this.cos.getObjectUrl).call(this.cos, {
                 Bucket: opt.bucket /* 必须 */,
                 Region: opt.region /* 必须 */,
