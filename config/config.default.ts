@@ -68,7 +68,7 @@ export default (appInfo: EggAppConfig) => {
     config.tars = {
         client: {
             // 主控地址
-            locator: 'tars.tarsregistry.QueryObj@tcp -h 10.233.64.6 -t 60000 -p 17890',
+            locator: '',
             // 超时设置
             timeout: 60000
         }
