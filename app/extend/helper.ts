@@ -1,7 +1,5 @@
 import { IHelper } from 'egg';
 
-import { JV as WxProxy } from '../tars/WxProxyServantProxy';
-
 export default {
     /**
      * 请求demo服务接口

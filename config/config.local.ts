@@ -29,31 +29,13 @@ export default (appInfo: EggAppConfig) => {
         host: '127.0.0.1',
         port: '3306',
         username: 'root',
-        password: 'jv1234',
+        password: '123456',
         database: 'db_jv_config',
-        charset: 'utf8',
-        useUTC: true,
-        synchronize: true,
-        logging: false,
-        entities: [path.join(appInfo.baseDir, 'app/model/**/*.ts')],
-        extra: {
-            connectionLimit: 5 // 连接池最大连接数量, 查阅资料 建议是  core number  * 2 + n
-        }
-    };
-
-    // ic配置库
-    const jvICConfigMysql = {
-        name: 'ic_config',
-        type: 'mysql',
-        host: '127.0.0.1',
-        port: '3306',
-        username: 'root',
-        password: 'jv1234',
-        database: 'db_jv_ic_config',
         charset: 'utf8',
         useUTC: true,
         synchronize: false,
         logging: false,
+        entities: [path.join(appInfo.baseDir, 'app/model/**/*.ts')],
         extra: {
             connectionLimit: 5 // 连接池最大连接数量, 查阅资料 建议是  core number  * 2 + n
         }
@@ -62,8 +44,7 @@ export default (appInfo: EggAppConfig) => {
     exports.mysql = {
         // database configuration
         clients: [
-            jvMysql,
-            jvICConfigMysql,
+            jvMysql
         ]
     };
 

@@ -1,4 +1,4 @@
-// This file is created by egg-ts-helper@1.25.8
+// This file is created by egg-ts-helper@1.30.2
 // Do not modify this file!!!!!!!!!
 
 import 'egg';
@@ -9,7 +9,6 @@ import ExportSource from '../../../app/model/source';
 import ExportSourceData from '../../../app/model/sourceData';
 import ExportSourceRegion from '../../../app/model/sourceRegion';
 import ExportUploadFileLog from '../../../app/model/uploadFileLog';
-import ExportWxQRCode from '../../../app/model/wxQRCode';
 import ExportInterfaceCos from '../../../app/model/interface/cos';
 import ExportInterfaceEnumType from '../../../app/model/interface/enumType';
 import ExportInterfaceModel from '../../../app/model/interface/model';
@@ -30,7 +29,6 @@ declare module 'egg' {
     SourceData: ReturnType<typeof ExportSourceData>;
     SourceRegion: ReturnType<typeof ExportSourceRegion>;
     UploadFileLog: ReturnType<typeof ExportUploadFileLog>;
-    WxQRCode: ReturnType<typeof ExportWxQRCode>;
     Interface: {
       Cos: ReturnType<typeof ExportInterfaceCos>;
       EnumType: ReturnType<typeof ExportInterfaceEnumType>;

@@ -16,7 +16,7 @@ export enum ELogType {
      */
     WXMenu = 1,
     /**
-     * 操作中金白名单
+     * 操作白名单
      */
     ZJWhite = 2,
     /**
@@ -24,7 +24,7 @@ export enum ELogType {
      */
     QueryCustomer = 3,
     /**
-     * 金腾白名单包管理操作
+     * 白名单包管理操作
      */
     JTWhite = 4,
     /**
