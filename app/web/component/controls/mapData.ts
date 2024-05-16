@@ -12,6 +12,7 @@ export default class MapData extends Vue {
      */
     @Prop()
     private data?: object | undefined;  
+    private disabled?: boolean | false;
     
     items = [] as any;
 
@@ -25,9 +26,8 @@ export default class MapData extends Vue {
         return data;
     }
     
-    initData() {   
-        
-         this.items = [];  
+    initData() {
+        this.items = [];
         if(!this.data) {
             this.data = {};
         }

@@ -47,18 +47,31 @@
                     </template>
                 </el-table-column>
                 <el-table-column
+                    prop="isDisabled"
+                    label="编辑禁用">
+                    <template slot-scope="scope">
+                        <span style="margin-left: 10px">{{ scope.row.isDisabled ? '禁用' : '不禁用' }}</span>
+                    </template>
+                </el-table-column>
+                <!-- <el-table-column
                     prop="sort"
                     label="排序">
-                </el-table-column>
+                    <template slot-scope="scope">
+                        <span style="margin-left: 10px">{{ scope.row.sortable?'支持':'不支持' }}</span>
+                    </template>
+                </el-table-column> -->
                 <el-table-column
-                label="操作"
-                width="100">
-                    <template slot="header" slot-scope="scope">
+                    label="操作"
+                    align="center"
+                    width="170">
+                    <template slot="header">
                         <el-button type="primary" icon="el-icon-plus" circle @click="editField()"></el-button>
                     </template>
                     <template slot-scope="scope">
                         <el-button @click="editField(scope.row)" type="text" size="small">编缉</el-button>
                         <el-button type="text" size="small" @click="deleteField(scope.row)">删除</el-button>
+                        <el-button type="text" size="small" v-if="scope.$index !== 0" @click="upperField(scope.$index)">上移</el-button>
+                        <el-button type="text" size="small" v-if="scope.$index !== computedMeta.Fields.length-1"  @click="downField(scope.$index)">下移</el-button>
                     </template>
                 </el-table-column>
             </el-table>
@@ -109,6 +122,10 @@
                 label="数据源"
                 value="source">
                 </el-option>
+                <el-option
+                label="脚本配置"
+                value="script">
+                </el-option>
             </el-select>
         </el-col>
     </el-form-item>
@@ -119,11 +136,10 @@
             :rows="2"
             placeholder="请输入内容"
             :autosize="{ minRows: 5, maxRows: 10 }"
-            v-model="currentFieldDataString">-->
-        </el-input>
-      </el-form-item>
-      <el-form-item label="数据配置" v-if="(currentField.type == 'single' || currentField.type == 'mutiple') && currentField.dataChannel == 'source'">
-
+            v-model="currentFieldDataString">
+        </el-input>-->
+    </el-form-item>
+    <el-form-item label="数据配置" v-if="(currentField.type == 'single' || currentField.type == 'mutiple') && currentField.dataChannel == 'source'">
         <el-col :span="8">
             <el-select
             v-model="currentFieldDataSource.sourceId"
@@ -168,15 +184,19 @@
                 </el-option>
             </el-select>
         </el-col>
+    </el-form-item>
+    <el-form-item label="配置脚本" v-if="(currentField.type == 'single' || currentField.type == 'mutiple') && currentField.dataChannel == 'script'">
+        <codemirror v-model="currentField.sourceConfig" :options="codeJSONOptions" style="height: 500px;" />
       </el-form-item>
-      <el-form-item label="最大长度" v-if="currentField.type == 'text' || currentField.type == 'content'">
+    <el-form-item label="最大长度" v-if="currentField.type == 'text' || currentField.type == 'content'">
         <el-input-number v-model="currentField.maxLength"></el-input-number>
-      </el-form-item>
+    </el-form-item>
     <el-form-item label="">
         <el-checkbox v-model="currentField.isRequired">字段必选</el-checkbox>
         <el-checkbox v-model="currentField.isUnique">唯一健</el-checkbox>
         <el-checkbox v-model="currentField.isHide">数据列表中隐藏列</el-checkbox>
         <el-checkbox v-model="currentField.sortable">支持排序</el-checkbox>
+        <el-checkbox v-model="currentField.isDisabled">编辑禁用</el-checkbox>
       </el-form-item>
 
       <el-form-item label="检索">

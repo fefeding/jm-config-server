@@ -86,9 +86,9 @@ export default class SourceService extends BaseTypeService<PublishLogOrm> {
                         // 同步到表
                         return await this.syncDataToTable(table, data, db, dataId, start);
                     },
-                    '$syncDataToRedis': async (key: string, data) => {
+                    '$syncDataToRedis': async (key: string, data, forced=false) => {
                         // 发布单条记录，不能直接发布redis，会导致覆盖全量
-                        if(dataId > 0) {
+                        if(dataId > 0 && !forced) {
                             vconsole.info('$syncDataToRedis', dataId, '单条发布不同步redis return');
                             return;
                         }
@@ -97,6 +97,13 @@ export default class SourceService extends BaseTypeService<PublishLogOrm> {
                         // 同步到redis
                         const res = await this.syncDataToRedis(key, data);
                         vconsole.info(res);
+                        return res;
+                    },
+                    '$publishToCos': async (data, filenmae?:string, contentType?: string, dir = '') => {
+                        let res = {};
+                        if(typeof data === 'object') data = JSON.stringify(data);
+                        res = await this.ctx.service.upload.uploadString(data, filenmae, contentType||"application/json", dir);
+                        vconsole.info('$publishToCos', res);
                         return res;
                     },
                     '$getSourceByKey': async (key: string) => {
@@ -109,6 +116,7 @@ export default class SourceService extends BaseTypeService<PublishLogOrm> {
                     },
                     "console": vconsole,
                     '$currentSource': source,
+                    "$dataId": dataId || 0,// 如果是单条，则会有这个id
                     // 注入当前用户信息
                     '$currentUser': this.ctx.currentSession.user || {},
                     moment
@@ -124,7 +132,8 @@ export default class SourceService extends BaseTypeService<PublishLogOrm> {
             console.log(e);
 
             rsp.ret = 10000012;
-            rsp.msg = '发布失败:' + e.message;
+            // @ts-ignore
+            rsp.msg = '发布失败:' + (e.message as any);
             log.content += `${e.toString()}\n`;
             log.state = PublishLogState.failed;
         }
@@ -230,7 +239,7 @@ export default class SourceService extends BaseTypeService<PublishLogOrm> {
             throw e;
         }
         finally {
-            await qry.release();
+            if(!qry.isReleased) await qry.release();
         }
     }
 

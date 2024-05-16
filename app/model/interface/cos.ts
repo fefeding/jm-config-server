@@ -13,6 +13,7 @@ export class IUploadOption {
     region?: string;
     header?: PlainObject<string>;
     stream?: Stream;
+    filename?: string;
 }
 export class IGetResponse {
     Body: Buffer;

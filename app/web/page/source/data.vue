@@ -43,8 +43,7 @@
         style="width: 100%">
         <el-table-column
             fixed
-            v-for="(item, key) in sourceFields"
-            v-if="!item.isHide"
+            v-for="(item, key) in sourceFieldsNotHide"
             v-bind:key="key"
             :sortable="item.sortable?'custom':false"
             show-overflow-tooltip
@@ -61,6 +60,9 @@
             prop="updater"
             label="最近修改人"
             width="100">
+            <template slot-scope="scope">
+                <StaffUserName :staffId="scope.row.updater" domain=""></StaffUserName>
+              </template>
         </el-table-column>
         <el-table-column
             prop="modifyTime"
@@ -81,6 +83,7 @@
                 <el-button @click="editData(scope.row)" type="text" size="small">编缉</el-button>
                 <el-button type="text" @click="deleteData(scope.row)" size="small">删除</el-button>
                 <el-button type="text" @click="publish(scope.row)" size="small">发布</el-button>
+                <el-button type="text" @click="copyData(scope.row)" size="small">复制</el-button>
             </template>
         </el-table-column>
     </el-table>
@@ -88,7 +91,7 @@
     <el-pagination
       @size-change="onPageSizeChange"
       @current-change="onPageCurrentPageChange"
-      :current-page="currentPage"
+      :current-page.sync="currentPage"
       :page-sizes="[10, 50, 100, 200, 300, 400, 1000]"
       :page-size="currentPageSize"
       layout="total, sizes, prev, pager, next, jumper"
@@ -105,19 +108,27 @@
     fullscreen
     width="80%">
     <el-form ref="dataEditForm" :model="currentEditDataRow" label-width="200px" v-if="currentEditDataRowData">
-        <el-form-item v-if="item.type != 'random'" :label="item.nickName" v-for="item in sourceFields"
-        v-bind:key="item.name" :rules="{
-            required: item.isRequired, message: '必填内容', trigger: 'blur'
-          }">
-            <el-input v-model="currentEditDataRowData[item.name]" v-if="item.type == 'text'" :maxlength="item.maxLength > 0 ? item.maxLength : 128" show-word-limit></el-input>
-            <el-input type="textarea" :rows="4" placeholder="请输入内容" v-model="currentEditDataRowData[item.name]" v-if="item.type == 'content'" :maxlength="item.maxLength > 0 ? item.maxLength : 1024" show-word-limit></el-input>
-            <el-input-number placeholder="请输入数字" v-model="currentEditDataRowData[item.name]" v-if="item.type == 'number'"></el-input-number>
+        <el-form-item :label="item.nickName" v-for="item in sourceFieldsNotRandomType"
+            v-bind:key="item.name" :rules="{
+                required: item.isRequired, message: '必填内容', trigger: 'blur'
+            }">
+            <el-input v-model="currentEditDataRowData[item.name]" v-if="item.type == 'text'"
+                :disabled="checkDisable(item)"
+                :maxlength="item.maxLength > 0 ? item.maxLength : 128" show-word-limit></el-input>
+            <el-input type="textarea" :rows="4" placeholder="请输入内容" v-model="currentEditDataRowData[item.name]" v-if="item.type == 'content'"
+                :disabled="checkDisable(item)"
+                :maxlength="item.maxLength > 0 ? item.maxLength : 1024" show-word-limit></el-input>
+            <el-input-number placeholder="请输入数字" v-model="currentEditDataRowData[item.name]"
+                :disabled="checkDisable(item)"
+                v-if="item.type == 'number'"></el-input-number>
             <el-date-picker
                 v-model="currentEditDataRowData[item.name]"
                 type="datetime"
+                :disabled="checkDisable(item)"
                 placeholder="选择日期时间" v-if="item.type == 'datetime'">
             </el-date-picker>
             <el-select v-model="currentEditDataRowData[item.name]" filterable placeholder="请选择" v-if="item.type == 'single'"
+                :disabled="checkDisable(item)"
                 :filter-method="(code)=>filterSelecterData(code, item, currentEditDataRowData[item.name])" clearable>
                 <el-option
                     v-for="opt in item.data"
@@ -129,6 +140,7 @@
                 </el-option>
             </el-select>
             <el-select v-model="currentEditDataRowData[item.name]" filterable multiple placeholder="请选择" v-if="item.type == 'mutiple'"
+                :disabled="checkDisable(item)"
                 :filter-method="(code)=>filterSelecterData(code, item, currentEditDataRowData[item.name])" clearable>
                 <el-option
                     v-for="opt in item.data"
@@ -154,12 +166,21 @@
                 <i v-else class="el-icon-plus avatar-uploader-icon"></i>
                 <div slot="tip" class="el-upload__tip">只能上传jpg/png/gif文件，且不超过500kb</div>
             </el-upload>-->
-            <ImageUploadControl v-if="item.type == 'image' || item.type == 'file'" :fileType="item.type == 'image'?'image':'other'" :imageUrl="currentEditDataRowData[item.name]"
-            v-on:update:url="(url) => currentEditDataRowData[item.name]=url"></ImageUploadControl>
+            <ImageUploadControl v-if="item.type == 'image' || item.type == 'file'"
+                :fileType="item.type == 'image'?'image':'other'"
+                :imageUrl="currentEditDataRowData[item.name]"
+                v-on:update:url="(url) => currentEditDataRowData[item.name]=url">
+            </ImageUploadControl>
 
-            <MapData v-if="item.type == 'map'" :data="currentEditDataRowData[item.name]" @dataChange="(res)=>currentEditDataRowData[item.name]=res"></MapData>
+            <MapData v-if="item.type == 'map'"
+                :data="currentEditDataRowData[item.name]"
+                :disabled="checkDisable(item)"
+                @dataChange="(res)=>currentEditDataRowData[item.name]=res">
+            </MapData>
 
-            <v-jsoneditor v-if="item.type == 'json'" v-model="currentEditDataRowData[item.name]" height="260px" :options="{mode: 'code', mainMenuBar: false, statusBar: false}" />
+            <v-jsoneditor v-if="item.type == 'json'" v-model="currentEditDataRowData[item.name]" height="260px"
+                :disabled="checkDisable(item)"
+                :options="{mode: 'code', mainMenuBar: false, statusBar: false}" />
         </el-form-item>
         <el-form-item>
             <el-button @click="dataEditDialogVisible = false">取消</el-button>

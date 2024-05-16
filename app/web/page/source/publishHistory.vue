@@ -47,7 +47,7 @@
     <el-pagination
         background
         layout="prev, pager, next"
-        :current-page="currentPage"
+        :current-page.sync="currentPage"
         :page-size="pageSize"
         :total="totalCount"
         @current-change="pageChange">

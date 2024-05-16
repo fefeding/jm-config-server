@@ -62,6 +62,15 @@ export default class SourceDataEditUI extends Vue {
 
     private isPublishing: boolean = false;// 发布中
 
+    // computed代替v-for v-if
+    get sourceFieldsNotRandomType() {
+        return this.sourceFields.filter(item=> item.type !== 'random')
+    }
+
+    get sourceFieldsNotHide() {
+        return this.sourceFields.filter(item=> !item.isHide)
+    }
+
     // 侦听sourceid变化
     get computedSource() {
         if(this.source && this.source.id > 0 && (!this.remoteSource || this.remoteSource.id != this.source.id)) {
@@ -150,7 +159,6 @@ export default class SourceDataEditUI extends Vue {
                         });
                     }
                 }
-                // @ts-ignore
                 f.filters = filters;
             }
         }
@@ -158,6 +166,20 @@ export default class SourceDataEditUI extends Vue {
         this.source = data;
 
         this.filterData();// 分页和过滤数据
+    }
+
+    async runScript(code) {
+        const res = await this.$ajax.requestApi<any, any>({
+            code: code
+        }, {
+            url: '/api/source/runScript'
+        });
+
+        if(res && res.ret == 0) {
+            return res.data;
+        } else {
+            this.$message.error('脚本执行失败：'+res.msg);
+        }
     }
 
     // 加载指定的资源信息
@@ -179,6 +201,10 @@ export default class SourceDataEditUI extends Vue {
                 f.isUnique = !!f.isUnique;
                 f.isRequired = !!f.isRequired;
                 f.isHide = !!f.isHide;
+                // 脚本配置每次打开重新请求
+                if(f.dataChannel === 'script' && f.sourceConfig) {
+                    f.data = await this.runScript(f.sourceConfig);
+                }
             }
 
             return rsp.data;
@@ -282,7 +308,7 @@ export default class SourceDataEditUI extends Vue {
                     }
                     // 随机码就生成一个
                     case FieldType.random: {
-                        row[f.name] = new Date().getTime() + '#' + Math.ceil(Math.random() * 100000);
+                        row[f.name] = Math.ceil(Math.random() * 100000) + '' + new Date().getTime() + '' + Math.ceil(Math.random() * 100000);
                         break;
                     }
                     default: {
@@ -292,6 +318,10 @@ export default class SourceDataEditUI extends Vue {
             }
         }
         this.currentEditDataRowData = row;
+    }
+
+    checkDisable(item) {
+        return item.isDisabled && this.dataEditDialogTitle === '修改数据'
     }
 
     // 查询数据
@@ -404,10 +434,10 @@ export default class SourceDataEditUI extends Vue {
 
     // 弹出编辑数据行
     editData(row?: SourceData) {
-
-        if(row) {
+        this.initEditDataRow(true, this.sourceFields, row && row.row? row.row: null);// 重置数据值
+        if(row && row.id) {
             this.dataEditDialogTitle = '修改数据';
-            this.initEditDataRow(true, this.sourceFields, row.row);// 重置数据值
+
             this.currentEditDataRow.sourceId = row.sourceId;
             this.currentEditDataRow.id = row.id;
             //this.currentEditDataRowData = row.row;
@@ -415,9 +445,17 @@ export default class SourceDataEditUI extends Vue {
         }
         else if(this.source) {
             this.dataEditDialogTitle = '新增数据';
-            this.initEditDataRow(true); // 重置数据值
         }
         this.dataEditDialogVisible = true;
+    }
+
+    // 复制一行数据，生成新的数据行
+    copyData(row) {
+        if(!row) return;
+        const newData = {
+            row: Object.assign({}, row.row)
+        }
+        this.editData(newData);
     }
 
     // 保存当前数据
@@ -440,7 +478,10 @@ export default class SourceDataEditUI extends Vue {
             spinner: 'el-icon-loading',
             background: 'rgba(0, 0, 0, 0.7)'
           });
-        const rsp = await this.$ajax.requestApi<SaveSourceDataReq, SaveSourceDataRsp>(req);
+        const rsp = await this.$ajax.requestApi<SaveSourceDataReq, SaveSourceDataRsp>(req).finally(() => {
+            loading.close();
+        });
+
 
         if(rsp.ret == 0) {
             this.$message.success('保存成功');
@@ -459,7 +500,7 @@ export default class SourceDataEditUI extends Vue {
             this.$message.error('保存失败:' + rsp.msg);
         }
 
-        loading.close();
+        // loading.close();
     }
 
     // 删除数 据
@@ -468,6 +509,7 @@ export default class SourceDataEditUI extends Vue {
 
         const req = new DeleteSourceDataReq();
         req.id = data.id;
+        req.sourceId = this.remoteSource.id;
 
         const loading = this.$loading({
             lock: true,
@@ -475,7 +517,9 @@ export default class SourceDataEditUI extends Vue {
             spinner: 'el-icon-loading',
             background: 'rgba(0, 0, 0, 0.7)'
           });
-        const rsp = await this.$ajax.requestApi<DeleteSourceDataReq, DeleteSourceDataRsp>(req);
+        const rsp = await this.$ajax.requestApi<DeleteSourceDataReq, DeleteSourceDataRsp>(req).finally(() => {
+            loading.close();
+        });
 
         if(rsp.ret == 0) {
             this.$message.success('删除成功');
@@ -486,7 +530,6 @@ export default class SourceDataEditUI extends Vue {
             this.$message.error('删除失败');
         }
 
-        loading.close();
     }
 
     // 发布数据
@@ -500,29 +543,40 @@ export default class SourceDataEditUI extends Vue {
         // 发布单条
         if(row && await this.$confirm("当前发布单条记录，确认发布？", '单条发布') != 'confirm') return;
 
-        const req = new PublishSourceReq();
-        // @ts-ignore
-        req.id = this.source.id;
-        req.dataId = row?row.id:0;
+        try{
+            const req = new PublishSourceReq();
+            req.id = this.source.id;
+            req.dataId = row?row.id:0;
 
-        this.isPublishing = true;
-        const loading = this.$loading({
-            lock: true,
-            text: '发布中',
-            spinner: 'el-icon-loading',
-            background: 'rgba(0, 0, 0, 0.7)'
-          });
-        const rsp = await this.$ajax.requestApi<PublishSourceReq, PublishSourceRsp>(req);
+            this.isPublishing = true;
+            const loading = this.$loading({
+                lock: true,
+                text: '发布中',
+                spinner: 'el-icon-loading',
+                background: 'rgba(0, 0, 0, 0.7)'
+            });
+            const rsp = await this.$ajax.requestApi<PublishSourceReq, PublishSourceRsp>(req).finally(() => {
+                loading.close();
+            });
+    ;
 
-        if(rsp.ret == 0) {
-            this.$message.success('发布成功');
+            if(rsp.ret == 0) {
+                this.$message.success('发布成功');
+                 // 刷新
+                this.remoteSource && this.bindSourceData(this.source.id);
+            }
+            else {
+                throw new Error(rsp.msg);
+            }
+        }catch(e) {
+            // loading.close();
+            this.$message.error('发布失败:' + e);
+        } finally {
+            this.isPublishing = false;
         }
-        else {
-            this.$message.error('发布失败:' + rsp.msg);
-        }
 
-        loading.close();
-        this.isPublishing = false;
+
+
     }
 
     // 跳去编辑数据源
@@ -545,7 +599,10 @@ export default class SourceDataEditUI extends Vue {
             background: 'rgba(0, 0, 0, 0.7)'
         });
 
-        const rsp = await this.$ajax.requestApi<DeleteSourceReq, DeleteSourceRsp>(req);
+        const rsp = await this.$ajax.requestApi<DeleteSourceReq, DeleteSourceRsp>(req).finally(() => {
+            loading.close();
+        });
+;
         // 保存成功
         if(rsp.ret == 0) {
             this.$message('删除成功');
@@ -556,12 +613,12 @@ export default class SourceDataEditUI extends Vue {
         else {
             this.$message(rsp.msg || '删除失败');
         }
-        loading.close();
+        // loading.close();
     }
 
     // 选择器过滤数据, key和名称都可以过滤
     filterSelecterData(code, field, data) {
-        
+
         // 缓存原始数据队列，通过过滤会改变data字段。
         const values = field['_$_data'] = field['_$_data'] || field.data;
         const result = new Array<any>();
@@ -569,7 +626,7 @@ export default class SourceDataEditUI extends Vue {
         for(let v of values) {
             // 去重
             if(result.findIndex(p => p.value == v.value) > -1) continue;
-            
+
             const label = v.label + '';
             var value = v.value + '';
 

@@ -172,6 +172,21 @@ export default class SourceEditUI extends Vue {
         await this.sourceChange();// 先加载
     }
 
+    // 调用后台接口运行脚本
+    async runScript(code) {
+        const res = await this.$ajax.requestApi<any, any>({
+            code: code
+        }, {
+            url: '/api/source/runScript'
+        });
+
+        if(res && res.ret == 0) {
+            return res.data;
+        } else {
+            this.$message.error('脚本执行失败：'+res.msg);
+        }
+    }
+
 
     // 行颜色
     fieldRowClassName({row, rowIndex}) {
@@ -194,7 +209,6 @@ export default class SourceEditUI extends Vue {
         await this.loadAllSource();
 
         const data = await this.loadSource(id);
-        // @ts-ignore
         this.currentSource.fromJSON(data);// 绑定
         this.currentPublishScript = data.publishScript || this.defaultScript;
 
@@ -216,12 +230,15 @@ export default class SourceEditUI extends Vue {
             if(!rsp.data.meta.Fields) {
                 rsp.data.meta.Fields = new Array<Field>();
             }
+
             for(let f of rsp.data.meta.Fields) {
                 f.isUnique = !!f.isUnique;
                 f.isRequired = !!f.isRequired;
                 f.isHide = !!f.isHide;
                 f.sortable = !!f.sortable;
                 f.searchType = f.searchType || 0;
+                f.isDisabled = !!f.isDisabled;
+                f.sourceConfig = f.sourceConfig || '';
             }
             return rsp.data;
         }
@@ -284,7 +301,10 @@ export default class SourceEditUI extends Vue {
             background: 'rgba(0, 0, 0, 0.7)'
           });
 
-        const rsp = await this.$ajax.requestApi<SaveSourceReq,SaveSourceRsp>(req);
+        const rsp = await this.$ajax.requestApi<SaveSourceReq,SaveSourceRsp>(req).finally(() => {
+            loading.close();
+        });
+;
         if(rsp.ret == 0) {
             this.$message('保存成功');
             if(!this.currentSource.id) this.currentSource.id = rsp.data.id;
@@ -294,7 +314,7 @@ export default class SourceEditUI extends Vue {
             this.$message(rsp.msg || '保存失败');
         }
 
-        loading.close();
+        // loading.close();
     }
     // 弹出字段编辑框
     editField(field?: Field) {
@@ -318,7 +338,6 @@ export default class SourceEditUI extends Vue {
         }
         if(field) {
             this.fieldDialogTitle = '修改字段';
-            //@ts-ignore
             this.currentField.fromJSON(field);
             this.currentFieldFlag = 1;
             if(field.data) {
@@ -331,7 +350,6 @@ export default class SourceEditUI extends Vue {
         }
         else {
             this.fieldDialogTitle = '新增字段';
-            //@ts-ignore
             this.currentField.fromJSON({
                 name: '',
                 nickName: '',
@@ -342,16 +360,18 @@ export default class SourceEditUI extends Vue {
                 isHide: false,
                 sortable: false,
                 isUnique: false,
+                isDisabled: false,
                 maxLength: 0,
                 searchType: 0,
                 data: '',
-                sort: 0
+                sort: 0,
+                sourceConfig: ''
             });
             this.currentFieldFlag = 0;
         }
     }
     // 保存字段
-    saveField() {
+    async saveField() {
         this.computedMeta = this.computedMeta || new Meta();
         this.computedMeta.Fields = this.computedMeta.Fields || new Array<Field>();
         try {
@@ -381,6 +401,10 @@ export default class SourceEditUI extends Vue {
                 else if(this.currentField.dataChannel == 'source') {
                     this.currentField.data = this.currentFieldDataSource; // 数据来源配置
                 }
+                // 脚本配置
+                else if(this.currentField.dataChannel == 'script') {
+                    this.currentField.data = await this.runScript(this.currentField.sourceConfig)
+                }
             }
 
             for(let f of this.computedMeta.Fields) {
@@ -398,7 +422,6 @@ export default class SourceEditUI extends Vue {
             }
 
             // 新增拷贝字段
-            //@ts-ignore
             if(this.currentFieldFlag === 0) this.computedMeta.Fields.push(new Field().fromJSON(this.currentField));
             this.fieldDialogVisible = false;
             this.currentSource.meta.Fields = this.computedMeta.Fields;// 刷新
@@ -417,6 +440,32 @@ export default class SourceEditUI extends Vue {
                 break;
             }
         }
+    }
+
+    // 上移字段
+    async upperField(index) {
+        this.$confirm('此操作将该字段上移, 是否继续?', '提示', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning'}
+        ).then(()=>{
+            this.computedMeta.Fields.splice(index-1, 0 , this.computedMeta.Fields.splice(index, 1)[0])
+        }).catch(()=> {
+            this.$message.info('已取消上移操作')
+        });
+    }
+
+    // 下移字段
+    async downField(index) {
+        this.$confirm('此操作将该字段下移, 是否继续?', '提示', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning'}
+        ).then(()=>{
+            this.computedMeta.Fields.splice(index+1, 0 , this.computedMeta.Fields.splice(index, 1)[0]);
+        }).catch(()=> {
+            this.$message.info('已取消下移操作')
+        });
     }
 
     // 确定修改脚本

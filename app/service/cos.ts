@@ -1,10 +1,11 @@
 import { ITokenOption, IUploadOption, IGetResponse } from '../model/interface/cos';
 
+import { createReadStream, ReadStream } from 'fs';
 import { promisify } from 'util';
 import { Context, Service, PlainObject } from 'egg';
 import STS from 'qcloud-cos-sts'; // https://www.npmjs.com/package/qcloud-cos-sts
 import COS from 'cos-nodejs-sdk-v5';
-import { Stream, Duplex, Writable } from 'stream';
+import { Readable, Duplex, Writable, PassThrough } from 'stream';
 
 let __cos = {}; // 全局唯一，这里用单例
 
@@ -135,6 +136,60 @@ export default class Cos extends Service {
     }
 
     /**
+     * 上传本地文件
+     * @param file 本地文件路径
+     * @param opt
+     * @returns
+     */
+    async uploadFile(file, opt: IUploadOption = {}) {
+        const rs = createReadStream(file);
+        try {
+            return await this.upload({
+                stream: rs,
+                ...opt
+            });
+        } finally {
+            rs.destroy();
+        }
+    }
+    /**
+     * 上传base64文件
+     * @param str base64串
+     * @param opt
+     * @returns
+     */
+    async uploadBase64(str, opt: IUploadOption = {}) {
+        const bufferStream = new PassThrough();
+        bufferStream.end(Buffer.from(str, 'base64'));
+
+        try {
+            return await this.upload({
+                stream: bufferStream,
+                ...opt
+            });
+        } finally {
+            bufferStream.destroy();
+        }
+    }
+
+    /**
+     * 上传文本文件
+     * @param str 文本
+     * @param opt
+     * @returns
+     */
+    async uploadString(str, opt: IUploadOption = {}) {
+        return await this.upload({
+            stream: str,
+            header: {
+                'content-type': 'text/plain',
+                'access-control-allow-origin': '*'
+            },
+            ...opt
+        });
+    }
+
+    /**
      * 解析cos地址
      * @param cosUrl cos地址
      */
@@ -170,10 +225,12 @@ export default class Cos extends Service {
             });
             return rsp;
         } catch (e) {
-            this.ctx.logger.error('cos get', e.message);
+            // @ts-ignore
+            const msg = e.message;
+            this.ctx.logger.error('cos get', msg);
             return {
                 ret: -1,
-                msg: e.message
+                msg
             };
         }
     }
@@ -198,10 +255,12 @@ export default class Cos extends Service {
             });
             return rsp;
         } catch (e) {
-            this.ctx.logger.error('cos headObject', e.message);
+            // @ts-ignore
+            const msg = e.message;
+            this.ctx.logger.error('cos headObject', msg);
             return {
                 ret: -1,
-                msg: e.message
+                msg
             };
         }
     }
@@ -252,10 +311,12 @@ export default class Cos extends Service {
             );
             return Output;
         } catch (e) {
-            this.ctx.logger.error('cos get', e.message);
+            // @ts-ignore
+            const msg = e.message;
+            this.ctx.logger.error('cos get', msg);
             return {
                 ret: -1,
-                msg: e.message
+                msg
             };
         }
     }
@@ -282,10 +343,12 @@ export default class Cos extends Service {
             });
             return rsp;
         } catch (e) {
-            this.ctx.logger.error('cos get', e.message);
+            // @ts-ignore
+            const msg = e.message;
+            this.ctx.logger.error('cos get', msg);
             return {
                 ret: -1,
-                msg: e.message
+                msg
             };
         }
     }
