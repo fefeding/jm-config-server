@@ -31,31 +31,13 @@ export default (appInfo: EggAppConfig) => {
         }
     };
 
-    const jvTestMysql = {
-        name: 'testConfigDB',
-        type: 'mysql',
-        "host": '127.0.0.1',
-        "port": '3306',
-        "username": 'root',
-        password: '123456',
-        database: 'db_jv_config',
-        charset: 'utf8',
-        useUTC: true,
-        synchronize: false,
-        logging: false,
-        entities: [path.join(appInfo.baseDir, 'app/model/**/*.js')],
-        extra: {
-            connectionLimit: 5 // 连接池最大连接数量, 查阅资料 建议是  core number  * 2 + n
-        }
-    };
-
     exports.mysql = {
         // database configuration
         clients: [
-            jvMysql,            
+            jvMysql,
         ],
         publishClients: [
-            jvTestMysql,
+
         ]
     };
 

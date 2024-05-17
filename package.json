@@ -1,6 +1,6 @@
 {
-  "name": "jv-config-server",
-  "description": "jv config server",
+  "name": "jm-config-server",
+  "description": "jm config server",
   "license": "MIT",
   "author": "fefeding",
   "version": "4.0.4",
